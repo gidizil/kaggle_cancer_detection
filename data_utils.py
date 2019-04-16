@@ -144,7 +144,8 @@ class PickleImageData():
             tmp_shuf_indices = self.shuffled_indices[start_pos: end_pos]
             files_list = self.all_files_list[tmp_shuf_indices]
             single_dict = self.build_single_dict(idx=i+1, files_list=files_list)
-            # TODO: Pickle the data
+
+            # pickle dictionary
             pickle_file_name = pickle_name + '_' + str(i+1)
             pickle_path = os.path.join(PICKLE_FILES_PATH, pickle_file_name)
             out_file = open(pickle_path, 'wb')
