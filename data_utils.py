@@ -2,6 +2,7 @@ import torch
 from torch.utils import data
 import pandas as pd
 import os
+import sys
 import configparser
 import numpy as np
 import random
@@ -12,7 +13,7 @@ import pickle
 """======================================================"""
 """ Two classes: one for pickling images and their labels"""
 """ Second class is building the Dataset object using the"""
-""" pickled data                                         """
+""" pickled data. Based on the CIFAR Dataset class.      """
 """======================================================"""
 
 # 1. get the names of the files (images) and their labels we will work with
@@ -127,12 +128,12 @@ class PickleImageData():
         """Build a single dictionary that is going to be pickled later"""
         batch_label = self.set_batch_label(idx)
         labels = self.extract_labels_from_files(files_list)
-        data = self.extract_data_from_files(files_list, flatten=False)
+        img_data = self.extract_data_from_files(files_list, flatten=False)
         file_names = files_list # Redundant, but makes it more readable
 
         single_dict = {'batch_label': batch_label,
                        'labels': labels,
-                       'data': data,
+                       'data': img_data,
                        'file_names': file_names}
         return single_dict
     #TODO: Add a no lables version for test time
@@ -158,3 +159,65 @@ class PickleImageData():
 test_instance = PickleImageData(image_path=SMALL_TRAIN_PATH, labels_path=LABELS_PATH,is_train=False, pickle_size=300)
 test_instance.build_pickled_dicts('small_train_data')
 #print(test_instance.shuffle_file_indices())
+
+class CancerDataset(data.Dataset):
+    # TODO: Handle images format (numpy vs PIL) for transform
+    # TODO: Add support for train/test
+    """
+    given the path to the data
+    (pickled dictionaries. see PickleImageData class)
+    build a Dataset object.
+    Transforms are optional
+    """
+    def __init__(self, data_path, is_train=True, transform=None):
+        """ Declaring stuff, unpickling and building images and labels lists for training
+            or just the images for testing"""
+
+        self.data_path = data_path
+        self.train = is_train
+        self.transform = transform
+
+        pickle_files = self.get_all_pickled_files()
+
+        self.images = []
+        self.labels = []
+        for p_file_name in pickle_files:
+            p_file = os.path.join(self.data_path, p_file_name)
+            p_file_open = open(p_file, 'rb')
+
+            # Handling unpickling in differnt versions
+            # result of entry is the dict from PickleImageData() class
+            if sys.version_info[0] == 2:
+                entry = pickle.load(p_file_open)
+            else:
+                entry = pickle.load(p_file_open, encoding='latin1')
+            self.images.append(entry['data'])
+            # in case of training/ testing with/out labels
+            if entry.get('labels', None) is not None:
+                self.labels += entry['labels']
+
+            self.images = np.concatenate(self.images)
+
+    def get_all_pickled_files(self):
+        """ Returns a list with the pickled file names"""
+        pickle_file_names = [f for f in os.listdir(self.data_path)
+                             if os.path.isfile(os.path.join(self.data_path, f))]
+        return pickle_file_names
+
+    def get_num_of_instances(self, list):
+        pass
+
+    def __getitem__(self, index):
+        img = self.images[index]
+        # TODO: check if this PIL-numpy-PIL is really necassery
+        # Return a PIL image
+        img = Image.fromarray(img)
+        target = self.labels[index]
+
+        #TODO: Handle the case of transform
+        return img, target
+
+    def __len__(self):
+        return len(self.images)
+
+
