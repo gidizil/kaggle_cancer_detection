@@ -1,0 +1,14 @@
+building a data loader:
+
+Two big steps (classes):
+1. Pickle data
+2. build loader
+
+step 1:
+final goal: 
+build dict with {'desc': description of pickle file,
+				 'labels': list of lables,
+				 'data': np array of the data: perhaps flattened}
+				 'filenames': list with name of files
+labels, data, and filenames are the size of the pickle size
+

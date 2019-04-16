@@ -1,0 +1,6 @@
+[PATHS]
+TRAIN_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/data/train
+TEST_PATH =  /Users/gzilbar/msc/side_projects/data/kaggle_1_data/data/test
+SMALL_TRAIN_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/data/small_train
+SMALL_VAL_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/data/small_test
+LABELS_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/data/train_labels.csv
