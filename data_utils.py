@@ -7,7 +7,7 @@ import numpy as np
 import random
 from PIL import Image
 import csv
-
+import pickle
 """======================================================"""
 """ Two classes: one for pickling images and their labels"""
 """ Second class is building the Dataset object using the"""
@@ -22,6 +22,7 @@ SMALL_TRAIN_PATH = config.get('PATHS', 'SMALL_TRAIN_PATH')
 SMALL_VAL_PATH = config.get('PATHS', 'SMALL_VAL_PATH')
 TEST_PATH = config.get('PATHS', 'TEST_PATH')
 LABELS_PATH = config.get('PATHS', 'LABELS_PATH')
+PICKLE_FILES_PATH = config.get('PATHS', 'PICKLE_FILES_PATH')
 
 class PickleImageData():
     """
@@ -134,7 +135,7 @@ class PickleImageData():
                        'file_names': file_names}
         return single_dict
     #TODO: Add a no lables version for test time
-    def build_pickled_dicts(self):
+    def build_pickled_dicts(self, pickle_name):
         pickle_size = self.pickle_size
         num_batchs = self.num_of_batches
         for i in range(num_batchs):
@@ -144,9 +145,14 @@ class PickleImageData():
             files_list = self.all_files_list[tmp_shuf_indices]
             single_dict = self.build_single_dict(idx=i+1, files_list=files_list)
             # TODO: Pickle the data
+            pickle_file_name = pickle_name + '_' + str(i+1)
+            pickle_path = os.path.join(PICKLE_FILES_PATH, pickle_file_name)
+            out_file = open(pickle_path, 'wb')
+            pickle.dump(single_dict, out_file)
+            out_file.close()
 
 
 
 test_instance = PickleImageData(image_path=SMALL_TRAIN_PATH, labels_path=LABELS_PATH,is_train=False, pickle_size=300)
-test_instance.build_pickled_dicts()
+test_instance.build_pickled_dicts('small_train_data')
 #print(test_instance.shuffle_file_indices())
