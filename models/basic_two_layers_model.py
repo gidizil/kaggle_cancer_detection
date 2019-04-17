@@ -3,7 +3,7 @@ import torchvision
 import torch.nn as nn
 import torch.nn.functional as F
 
-class BasicTwoLayerNet(nn.Module):
+class Net(nn.Module):
     def __init__(self):
         super(BasicTwoLayerNet).__init__()
         #TODO: Add config options
@@ -25,10 +25,15 @@ class BasicTwoLayerNet(nn.Module):
 
         x = self.conv2(x)
         x = self.conv2_bn_2d(x)
-        x = F.relu(X)
+        x = F.relu(x)
         x = self.pool(x)
 
         # 2. Feed Forward part of network
         x = x.view(-1, 128 * 5 * 5)
-        x = F.relu(x)
-        
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+
+
