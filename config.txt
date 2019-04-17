@@ -6,5 +6,5 @@ SMALL_VAL_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/data/small_
 LABELS_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/data/train_labels.csv
 PICKLE_FILES_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/data/pickle_files
 
-[LEARNING_PARAMS]
+[HYPER_PARAMS]
 LR = 0.001
