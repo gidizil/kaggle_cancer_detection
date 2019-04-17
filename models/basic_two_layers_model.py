@@ -1,11 +1,9 @@
-import torch
-import torchvision
 import torch.nn as nn
 import torch.nn.functional as F
 
 class Net(nn.Module):
     def __init__(self):
-        super(BasicTwoLayerNet).__init__()
+        super(Net).__init__()
         #TODO: Add config options
         self.conv1 = nn.conv2d(3, 16, 5)
         self.conv1_bn_2d = nn.BatchNorm2d(16)
