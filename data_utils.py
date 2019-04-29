@@ -26,7 +26,8 @@ TEST_PATH = config.get('PATHS', 'TEST_PATH')
 LABELS_PATH = config.get('PATHS', 'LABELS_PATH')
 PICKLE_FILES_PATH = config.get('PATHS', 'PICKLE_FILES_PATH')
 
-class PickleImageData():
+
+class PickleImageData:
     """
     Produce dictionaries of relevant data
     dictionary contains:
@@ -159,6 +160,7 @@ class PickleImageData():
 test_instance = PickleImageData(image_path=SMALL_TRAIN_PATH, labels_path=LABELS_PATH,is_train=False, pickle_size=300)
 test_instance.build_pickled_dicts('small_train_data')
 #print(test_instance.shuffle_file_indices())
+
 
 class CancerDataset(data.Dataset):
     # TODO: Handle images format (numpy vs PIL) for transform
