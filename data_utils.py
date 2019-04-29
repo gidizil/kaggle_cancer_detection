@@ -41,10 +41,10 @@ class PickleImageData:
 
     # TODO: (optinal) add a config interface
     # TODO: (optinal) add a way to insert labels dictionary
-    def __init__(self, image_path, labels_path, is_train, pickle_size=5000):
+    def __init__(self, image_path, labels_path, train, pickle_size=5000):
         self.image_path = image_path
         self.labels_path = labels_path
-        self.is_train = is_train
+        self.is_train = train
         self.pickle_size = pickle_size
 
         self.all_files_list = None
