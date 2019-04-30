@@ -4,7 +4,8 @@ TEST_PATH =  /Users/gzilbar/msc/side_projects/data/kaggle_1_data/data/test
 SMALL_TRAIN_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/data/small_train
 SMALL_VAL_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/data/small_test
 LABELS_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/data/train_labels.csv
-PICKLE_FILES_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/data/pickle_files
+PICKLE_TRAIN_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/data/pickle_files
+PICKLE_VAL_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/data/pickle_files
 
 [HYPER_PARAMS]
 LR = 0.001
