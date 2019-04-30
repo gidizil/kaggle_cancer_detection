@@ -29,6 +29,8 @@ class Classifier:
         self.classifier = classifier
         # TODO: handling **kwargs
 
+        self.epochs = None
+
         self._set_device()
         self.pass_device_to_gpu()
 
@@ -38,11 +40,11 @@ class Classifier:
 
     def pass_device_to_gpu(self):
         """if device is gpu - support multiple gpu"""
-        if self.device != 'cpu':
+        if torch.cuda.is_available():
             self.classifier = nn.DataParallel(self.classifier)
             self.epochs = 10
         else:
-            self.epochs = 1
+            self.epochs = 3
 
         self.classifier = self.classifier.to(self.device)
 
@@ -60,7 +62,7 @@ class Classifier:
         criterion, optimizier = self.set_loss_function()
         for epoch in range(self.epochs):
             running_loss = 0.0
-            for i, (images, labels) in enumerate(train_loader):
+            for i, (images, labels) in enumerate(train_loader, 0):
                 # set params and all others to train mode
                 self.classifier.train()
                 # pass data gpu (if exists)
@@ -79,12 +81,12 @@ class Classifier:
                 running_loss += loss.item()
 
                 # print average loss in last few steps
-                if i % 2000 == 1999:
+                if i % 10 == 9:
                     # TODO: do this in .format notation
-                    print()
-                running_loss = 0.0
+                    print('Epoch: {0}, Batch: {1}, Loss: {2:.2f}'.format(epoch + 1, i + 1, running_loss))
+                    running_loss = 0.0
 
-            print('Training Finished!')
+        print('Training Finished!')
 
     def predict(self, test_loader):
         """ Test classifier. please provide test loader"""
