@@ -12,3 +12,9 @@ build dict with {'desc': description of pickle file,
 				 'filenames': list with name of files
 labels, data, and filenames are the size of the pickle size
 
+data_loader_v2:
+1. Based on the Stanford Toturial - each image is pickled
+2. labels are stored in dictionaries of: "key": image_name,
+   and "value": label_value
+3. data will already be pickled as images
+
