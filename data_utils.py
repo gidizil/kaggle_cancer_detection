@@ -1,5 +1,6 @@
 import torch
 from torch.utils import data
+from torchvision import transforms
 import pandas as pd
 import os
 import sys
@@ -24,7 +25,7 @@ SMALL_TRAIN_PATH = config.get('PATHS', 'SMALL_TRAIN_PATH')
 SMALL_VAL_PATH = config.get('PATHS', 'SMALL_VAL_PATH')
 TEST_PATH = config.get('PATHS', 'TEST_PATH')
 LABELS_PATH = config.get('PATHS', 'LABELS_PATH')
-PICKLE_FILES_PATH = config.get('PATHS', 'PICKLE_FILES_PATH')
+PICKLE_TRAIN_PATH= config.get('PATHS', 'PICKLE_TRAIN_PATH')
 
 
 class PickleImageData:
@@ -90,7 +91,7 @@ class PickleImageData:
             batch_data = np.zeros((len(files_list), *self.img_dims))
         for idx, file_name in enumerate(files_list):
             path = os.path.join(self.image_path, file_name)
-            np_img = np.array(Image.open(path))
+            np_img = np.array(Image.open(path), dtype=np.uint8)
             np_img = np_img[:, :, ::-1]  # Convert image from BGR to RGB
             if flatten:
                 batch_data[idx, :] = np.reshape(np_img, newshape=[1, -1])[0]  # flatten image
@@ -112,6 +113,8 @@ class PickleImageData:
         for file in files_list:
             id = file.split('.')[0]
             labels_list.append(self.labels_dict[id])
+
+        labels_list = list(map(int, labels_list))
 
         return labels_list
 
@@ -150,14 +153,14 @@ class PickleImageData:
 
             # pickle dictionary
             pickle_file_name = pickle_name + '_' + str(i+1)
-            pickle_path = os.path.join(PICKLE_FILES_PATH, pickle_file_name)
+            pickle_path = os.path.join(PICKLE_TRAIN_PATH, pickle_file_name)
             out_file = open(pickle_path, 'wb')
             pickle.dump(single_dict, out_file)
             out_file.close()
 
 
 
-test_instance = PickleImageData(image_path=SMALL_TRAIN_PATH, labels_path=LABELS_PATH,is_train=False, pickle_size=300)
+test_instance = PickleImageData(image_path=SMALL_TRAIN_PATH, labels_path=LABELS_PATH,train=False, pickle_size=300)
 test_instance.build_pickled_dicts('small_train_data')
 #print(test_instance.shuffle_file_indices())
 
@@ -171,13 +174,14 @@ class CancerDataset(data.Dataset):
     build a Dataset object.
     Transforms are optional
     """
-    def __init__(self, data_path, is_train=True, transform=None):
+    def __init__(self, data_path, is_train=True, transform=None, label_transform=None):
         """ Declaring stuff, unpickling and building images and labels lists for training
             or just the images for testing"""
 
         self.data_path = data_path
         self.train = is_train
         self.transform = transform
+        self.label_transform = label_transform
 
         pickle_files = self.get_all_pickled_files()
 
@@ -193,12 +197,13 @@ class CancerDataset(data.Dataset):
                 entry = pickle.load(p_file_open)
             else:
                 entry = pickle.load(p_file_open, encoding='latin1')
+
             self.images.append(entry['data'])
             # in case of training/ testing with/out labels
             if entry.get('labels', None) is not None:
                 self.labels += entry['labels']
-
-            self.images = np.concatenate(self.images)
+        self.images = np.concatenate(self.images)
+        self.images = np.asarray(self.images, dtype=np.uint8)
 
     def get_all_pickled_files(self):
         """ Returns a list with the pickled file names"""
@@ -214,10 +219,21 @@ class CancerDataset(data.Dataset):
         # TODO: check if this PIL-numpy-PIL is really necassery
         # Return a PIL image
         img = Image.fromarray(img)
-        target = self.labels[index]
+        label = self.labels[index]
 
-        #TODO: Handle the case of transform
-        return img, target
+        if self.transform is not None:
+            img = self.transform(img)
+        else:
+            transform = transforms.Compose(
+                [transforms.ToTensor()])
+            img = transform(img)
+
+        if self.label_transform is not None:
+            label = self.label_transform(label)
+        else:
+            label = torch.tensor(label, dtype=torch.long)
+
+        return img, label
 
     def __len__(self):
         return len(self.images)
