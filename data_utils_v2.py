@@ -24,7 +24,7 @@ LABELS_PATH = config.get('PATHS', 'LABELS_PATH')
 class PickleImageData:
     """ ========================================================== """
     """ Produces three things:                                     """
-    """ 1. Directory with images pickled as tensors                """
+    """ 1. Directory with images pickled as PIL Images             """
     """ 2. list with name of files (list) in each directory        """
     """ 3. Dictionary. label (value) of each image file_name (key) """
     """ ========================================================== """
