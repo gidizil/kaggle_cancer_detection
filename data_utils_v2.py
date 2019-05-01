@@ -72,11 +72,23 @@ class PickleImageData:
             pil_img = self.image_to_pil(img_file_name)
             self.pickle_pil_image(pil_img, img_file_name)
 
-    
+    def pickle_images_list(self):
+        images_names_list_path = os.path.join(self.pickle_path, 'images_names_list.pickle')
+        output_file = open(images_names_list_path, 'wb')
+        pickle.dump(self.images_list, output_file)
+        output_file.close()
 
+    def pickle_labels_dict(self):
+        lables_pickle_path = os.path.join(self.pickle_path, 'labels_dict.pickle')
+        output_file = open(lables_pickle_path, 'wb')
+        pickle.dump(self.labels_dict, output_file)
+        output_file.close()
 
-
+    def pickle_everything(self):
+        self.pickle_all_images()
+        self.pickle_images_list()
+        self.pickle_labels_dict()
 
 test = PickleImageData(SMALL_TRAIN_PATH, PICKLE_S_TRAIN_PATH_V2, LABELS_PATH)
-test.pickle_all_images()
+test.pickle_everything()
 
