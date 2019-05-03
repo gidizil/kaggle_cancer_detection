@@ -2,6 +2,7 @@ import  random
 import os
 import numpy as np
 import torch
+import configparser
 
 """ =================================== """
 """ Collection of miscellaneous methods """
@@ -10,7 +11,7 @@ import torch
 """ =================================== """
 
 
-class GeneralUtils:
+class SetSeeds:
     """Collection of useful methods"""
 
     @staticmethod
@@ -29,5 +30,22 @@ class GeneralUtils:
     def _init_fn(worker_id):
         """ Setting a fixed seed for each worker in the DataLoader"""
         np.random.seed(12 + worker_id)
+
+
+
+class GPUConfig:
+    """Different configurations for the case of GPU/CPU"""
+
+    @staticmethod
+    def set_num_workers(has_gpu):
+        config = configparser.ConfigParser()
+        config.read_file(open(r'config.txt'))
+        if has_gpu:
+            return config.get('GPU', 'NUM_WORKERS')
+        else:
+            return config.get('CPU', 'NUM_WORKERS')
+
+
+
 
 
