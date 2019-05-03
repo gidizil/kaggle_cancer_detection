@@ -13,3 +13,9 @@ PICKLE_S_VAL_PATH_V2 = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/pickl
 
 [HYPER_PARAMS]
 LR = 0.001
+
+[GPU]
+NUM_WORKERS = 8
+
+[CPU]
+NUM_WORKERS = 2
