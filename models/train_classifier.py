@@ -5,6 +5,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 from models.basic_two_layers_model import Net
 import configparser
+import numpy as np
 
 
 """==========================================="""
@@ -40,11 +41,12 @@ class Classifier:
 
     def pass_device_to_gpu(self):
         """if device is gpu - support multiple gpu"""
+        """ in addition, set fixed seed"""
         if torch.cuda.is_available():
             self.classifier = nn.DataParallel(self.classifier)
             self.epochs = 10
         else:
-            self.epochs = 3
+            self.epochs = 1
 
         self.classifier = self.classifier.to(self.device)
 
@@ -59,8 +61,8 @@ class Classifier:
 
     def fit(self, train_loader):
         """ Train classifier. please provide train loader"""
+
         criterion, optimizier = self.set_loss_function()
-        torch.manual_seed(42)
         for epoch in range(self.epochs):
             running_loss = 0.0
             for i, (images, labels) in enumerate(train_loader, 0):
