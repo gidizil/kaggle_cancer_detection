@@ -5,8 +5,8 @@ import torch
 
 """ =================================== """
 """ Collection of miscellaneous methods """
-""" to help with general problem        """
-""" encountered along the way            """
+""" to help with general problems       """
+""" encountered along the way           """
 """ =================================== """
 
 
