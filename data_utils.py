@@ -105,7 +105,7 @@ class PickleImageData:
         labels_dict = {}
         with open(self.labels_path) as labels_file:
             reader = csv.reader(labels_file, delimiter=',')
-            self.labels_dict = dict(reader)
+        self.labels_dict = dict(reader)
 
     def extract_labels_from_files(self, files_list):
         """Create s list of labels based on corresponding images (files)"""
@@ -237,5 +237,4 @@ class CancerDataset(data.Dataset):
 
     def __len__(self):
         return len(self.images)
-
 
