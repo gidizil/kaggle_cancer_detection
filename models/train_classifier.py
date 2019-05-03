@@ -60,6 +60,7 @@ class Classifier:
     def fit(self, train_loader):
         """ Train classifier. please provide train loader"""
         criterion, optimizier = self.set_loss_function()
+        torch.manual_seed(42)
         for epoch in range(self.epochs):
             running_loss = 0.0
             for i, (images, labels) in enumerate(train_loader, 0):
