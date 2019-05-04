@@ -44,7 +44,7 @@ class GPUConfig:
             return int(config.get('GPU', 'NUM_WORKERS'))
         else:
             return int(config.get('CPU', 'NUM_WORKERS'))
-        
+
 
 
 
