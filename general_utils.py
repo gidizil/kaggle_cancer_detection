@@ -41,9 +41,9 @@ class GPUConfig:
         config = configparser.ConfigParser()
         config.read_file(open(r'config.txt'))
         if has_gpu:
-            return config.get('GPU', 'NUM_WORKERS')
+            return int(config.get('GPU', 'NUM_WORKERS'))
         else:
-            return config.get('CPU', 'NUM_WORKERS')
+            return int(config.get('CPU', 'NUM_WORKERS'))
 
 
 
