@@ -1,0 +1,14 @@
+How To REview the images
+========================
+In order to understand the problem at hand
+the best solution is to review the images
+we have. The basic idea would be to
+compare between images from different classes
+with similar statistics and compare the differences
+
+relevant statistics
+====================
+1. Image Energy
+2. Channel Energy
+3. mean
+4. STD and
