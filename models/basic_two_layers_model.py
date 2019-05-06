@@ -12,7 +12,7 @@ class Net(nn.Module):
         self.conv2_bn_2d = nn.BatchNorm2d(128)
         self.fc1 = nn.Linear(128*21*21, 120)
         self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
+        self.fc3 = nn.Linear(84, 2)
 
     def forward(self, x):
         # 1. Conv part of network
