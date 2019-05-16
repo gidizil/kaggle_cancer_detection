@@ -16,6 +16,26 @@ LR = 0.001
 
 [GPU]
 NUM_WORKERS = 8
+TRAIN_PATH = /var/data/cancer_detection_data/train
+VAL_PATH = /var/data/cancer_detection_data/val
+TEST_PATH = /var/data/cancer_detection_data/test
+
+PICKLE_TRAIN_PATH = /var/data/cancer_detection_data/pickle_data/train
+PICKLE_VAL_PATH = /var/data/cancer_detection_data/pickle_data/val
+PICKLE_TEST_PATH = /var/data/cancer_detection_data/pickle_data/test
+LABELS_PATH = /var/data/cancer_detection_data/train_labels.csv
 
 [CPU]
 NUM_WORKERS = 2
+TRAIN_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/train
+TEST_PATH =  /Users/gzilbar/msc/side_projects/data/kaggle_1_data/test
+
+SMALL_TRAIN_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/small_train
+SMALL_VAL_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/small_val
+
+PICKLE_S_TRAIN_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/pickle_files/small_train/
+PICKLE_S_VAL_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/pickle_files/small_val
+
+PICKLE_S_TRAIN_PATH_V2 = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/pickle_files/small_train_v2
+PICKLE_S_VAL_PATH_V2 = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/pickle_files/small_val_v2
+LABELS_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/train_labels.csv
