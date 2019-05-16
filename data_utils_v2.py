@@ -3,12 +3,15 @@ import configparser
 import os
 import numpy as np
 import csv
-import pickle
 import torch
 from torch.utils import data
 from torchvision import transforms
 import pickle
 import sys
+from sklearn.model_selection import train_test_split
+import pandas as pd
+import shutil
+from general_utils import GPUConfig
 
 """==========================================="""
 """ Another versions of the PickleImage class """
@@ -16,13 +19,11 @@ import sys
 """ Stanford Tutorial.                        """
 """==========================================="""
 
+# Some directories configuration
 config = configparser.ConfigParser()
 config.read_file(open(r'config.txt'))
-SMALL_TRAIN_PATH = config.get('PATHS', 'SMALL_TRAIN_PATH')
-SMALL_VAL_PATH = config.get('PATHS', 'SMALL_VAL_PATH')
-PICKLE_S_TRAIN_PATH_V2 = config.get('PATHS', 'PICKLE_S_TRAIN_PATH_V2')
-PICKLE_S_VAL_PATH_V2 = config.get('PATHS', 'PICKLE_S_VAL_PATH_V2')
-LABELS_PATH = config.get('PATHS', 'LABELS_PATH')
+config_class = GPUConfig()
+path_dict = config_class.get_paths_dict()
 
 
 class PickleImageData:
@@ -126,8 +127,9 @@ class PickleImageData:
         return data_object
 
 
-test = PickleImageData(SMALL_TRAIN_PATH, PICKLE_S_TRAIN_PATH_V2, LABELS_PATH)
-test.pickle_everything()
+""" Pickle all files"""
+# test = PickleImageData(path_dict['val'], path_dict['pickle_val'], path_dict['labels'])
+# test.pickle_everything()
 
 
 class CancerDataset(data.Dataset):
@@ -158,3 +160,55 @@ class CancerDataset(data.Dataset):
         return X, y
 
 
+class GeneralDataUtils:
+    """ ================================= """
+    """ Collection of useful methods      """
+    """ that are data related but do not  """
+    """ Under the category of the classes """
+    """ above. possible even as one-of's  """
+    """ ================================= """
+
+    def __init__(self):
+        pass
+
+    def _get_files_in_dir(self, dir_path, suffix=None):
+        """ get list of files in dir. specific suffix - optional"""
+        if suffix is not None:
+            images_list = [f.split('.')[0] for f in os.listdir(dir_path) if f.endswith(suffix)]
+        else:
+            images_list = [f.split('.')[0] for f in os.listdir(dir_path)]
+
+        return images_list
+
+    def _get_relevant_images_and_labels(self, images_list, labels_path):
+        """extract relevant images, labels for a given images list"""
+        labels_df = pd.read_csv(labels_path)
+        relevant_labels_df = labels_df[labels_df.id.isin(images_list)]
+
+        rel_images = relevant_labels_df.id.values
+        rel_labels = relevant_labels_df.label.values
+
+        return rel_images, rel_labels
+
+    def train_val_split(self, train_path, val_path, labels_path, val_rate=0.2, special_suffix=None):
+        """ Moves random files from train to val dir. specific suffix - optional """
+
+        # 1. Create a list of all images in directory:
+        images_list = self._get_files_in_dir(train_path, special_suffix)
+
+        # 2. extract files to be in val directory
+        images, labels = self._get_relevant_images_and_labels(images_list, labels_path)
+
+        train_images, val_images, y_tr, y_val = \
+            train_test_split(images, labels, test_size=val_rate, stratify=labels)
+
+        # 3. moves files to val directory:
+        for img in val_images:
+            train_img_path = os.path.join(train_path, img + '.tif')
+            val_img_path = os.path.join(val_path, img + '.tif')
+            shutil.move(train_img_path, val_img_path)
+
+"""Move the images to val"""
+# move_files_to_val.train_val_split(path_dict['train'],
+#                                   path_dict['val'],
+#                                   path_dict['labels'])
