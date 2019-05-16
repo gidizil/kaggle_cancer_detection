@@ -1,7 +1,6 @@
 import torch
 from torch.utils import data
 from torchvision import transforms
-import pandas as pd
 import os
 import sys
 import configparser
@@ -10,6 +9,12 @@ import random
 from PIL import Image
 import csv
 import pickle
+
+"""======================================================"""
+"""======================================================"""
+"""               Deprecated Do Not Use!!!               """
+"""======================================================"""
+"""======================================================"""
 
 """======================================================"""
 """ Two classes: one for pickling images and their labels"""
