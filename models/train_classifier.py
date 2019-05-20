@@ -1,11 +1,11 @@
 import torch
-import torchvision
 import torch.nn as nn
 import torch.optim as optim
-import torch.nn.functional as F
-from models.basic_two_layers_model import Net
-import configparser
-import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from general_utils import GPUConfig
+import os
 
 
 """==========================================="""
@@ -28,12 +28,22 @@ class Classifier:
     # TODO: handle params using **kwargs
     def __init__(self, classifier):
         self.classifier = classifier
+        self.class_config = GPUConfig()
         # TODO: handling **kwargs
 
         self.epochs = None
 
         self._set_device()
         self.pass_device_to_gpu()
+
+    def plot_train_val_loss(self, train_loss_arr, val_loss_arr):
+        """ Plot the training and validation error after each epoch"""
+        path_dict = self.class_config.get_paths_dict()
+        plot_path= os.path.join(path_dict['plots'], 'train_val_loss.png')
+        plt.plot(range(1, self.epochs + 1), train_loss_arr, label='Train Loss')
+        plt.plot(range(1, self.epochs + 1), val_loss_arr, label='Validation Loss')
+        plt.legend(loc='upper right')
+        plt.savefig(plot_path)
 
     def _set_device(self):
         """set device to gpu if possible"""
@@ -46,7 +56,7 @@ class Classifier:
             self.classifier = nn.DataParallel(self.classifier)
             self.epochs = 10
         else:
-            self.epochs = 1
+            self.epochs = 2
 
         self.classifier = self.classifier.to(self.device)
 
@@ -67,6 +77,7 @@ class Classifier:
             running_loss = 0.0
             for i, (images, labels) in enumerate(train_loader, 0):
                 # set params and all others to train mode
+                #TODO: is possible to set classifier outside training loop
                 self.classifier.train()
                 # pass data gpu (if exists)
                 images = images.to(self.device)
@@ -85,7 +96,6 @@ class Classifier:
 
                 # print average loss in last few steps
                 if i % 10 == 9:
-                    # TODO: do this in .format notation
                     print('Epoch: {0}, Batch: {1}, Loss: {2:.2f}'.format(epoch + 1, i + 1, running_loss))
                     running_loss = 0.0
 
@@ -98,13 +108,64 @@ class Classifier:
         self.classifier.eval() # set to architecture to test mode (BN, dropout etc.)
         with torch.no_grad():
             for (images, labels) in test_loader:
+                images, labels = images.to(self.device), labels.to(self.device)
                 outputs = self.classifier(images)
                 _, predicted = torch.max(outputs, 1) # get highest score classification
                 total += labels.size(0)
-                correct += (predicted == labels).sum().item() # .item() neccassery
+                correct += (predicted == labels).sum().item()
 
+    def fit_and_eval(self, train_loader, val_loader):
+        """ Method for fit and evaluate loss.   """
+        """ Train, and after epoch, evaluate    """
+        """ loss on the entire validation set   """
+        train_loss_arr = []
+        val_loss_arr = []
+        criterion, optimizier = self.set_loss_function()
+        for epoch in range(self.epochs):
+            train_loss = 0.0
+            val_loss = 0.0
+            # train and calculate loss in epoch
+            for i, (images, labels) in enumerate(train_loader):
+                # set to train mode
+                # TODO: is possible to set classifier outside training loop
+                self.classifier.train()
+                # pass data to gpu:
+                images = images.to(self.device)
+                labels = labels.to(self.device)
+
+                # Forward pass:
+                scores = self.classifier(images)
+                loss = criterion(scores, labels)
+
+                # Backward pass and weight update:
+                optimizier.zero_grad()
+                loss.backward()
+                optimizier.step()
+
+                train_loss += loss.item()
+
+            # set classifier to eval mode:
+            self.classifier.eval()
+            with torch.no_grad():
+                for i, (images, labels) in enumerate(val_loader):
+
+                    # pass device to gpu
+                    images = images.to(self.device)
+                    labels = labels.to(self.device)
+
+                    # Forward pass
+                    scores = self.classifier(images)
+                    loss = criterion(scores, labels)
+                    val_loss += loss.item()
+
+            train_loss_arr.append(train_loss)
+            val_loss_arr.append(val_loss)
+
+        # TODO: plot train and val loss for each epoch - Make sure everything goes down
+        self.plot_train_val_loss(train_loss_arr, val_loss_arr)
 
     # TODO: add precision recall support
+
 
 
 
