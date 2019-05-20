@@ -1,0 +1,14 @@
+
+# TODO:
+1. plot loss function of training (pay attention to GPU mode)
+2. fix the ssh linux no matplotlib.
+2. create a train_and_eval method in Classifier. - New branch
+3. plot train/val from the train and eval method
+4. Use other metrices other than loss ( accuracy, precision, recall) etc. Create/Find metrics class
+5. visualize batch before network
+6. learn work with .git ignore. move config, and all other text data
+7. Fix README.md - Its important
+8. init final layer according to label distribution
+9. Make GPU and CPU config - PATHS- DONE
+10. Split to train and val on gpu - DONE
+11. invest time in transformations and augmentations
