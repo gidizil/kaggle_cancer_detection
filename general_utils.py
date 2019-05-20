@@ -1,4 +1,4 @@
-import  random
+import random
 import os
 import numpy as np
 import torch
@@ -61,16 +61,17 @@ class GPUConfig:
             path_dict['pickle_val'] = config.get('GPU', 'PICKLE_VAL_PATH')
             path_dict['pickle_test'] = config.get('GPU', 'PICKLE_TEST_PATH')
             path_dict['labels'] = config.get('GPU', 'LABELS_PATH')
+            path_dict['plots'] = config.get('GPU', 'PLOTS_PATH')
         else:
             path_dict['train'] = config.get('CPU', 'SMALL_TRAIN_PATH')
             path_dict['val'] = config.get('CPU', 'SMALL_VAL_PATH')
-            # this will be empty at the moment
             path_dict['test'] = config.get('CPU', 'TEST_PATH')
             path_dict['pickle_train'] = config.get('CPU', 'PICKLE_S_TRAIN_PATH_V2')
             path_dict['pickle_val'] = config.get('CPU', 'PICKLE_S_VAL_PATH_V2')
-            # this will be empty at the moment
-            path_dict['pickle_test'] = config.get('CPU', 'PICKLE_TEST_PATH')
+            # this one doesn't really exist. only for compatability
+            path_dict['pickle_test'] = config.get('CPU', 'PICKLE_S_TEST_PATH_V2')
             path_dict['labels'] = config.get('CPU', 'LABELS_PATH')
+            path_dict['plots'] = config.get('CPU', 'PLOTS_PATH')
 
         return path_dict
 
