@@ -19,7 +19,6 @@ images_list_path = os.path.join(path_dict['pickle_train'], 'images_names_list.pi
 tr_images_list = PickleImageData.unpickle_file(images_list_path)
 labels_dict_path = os.path.join(path_dict['pickle_train'], 'labels_dict.pickle')
 tr_labels_dict = PickleImageData.unpickle_file(labels_dict_path)
-
 # 2B. get pickled data objects (unpickled) for validation
 images_list_path = os.path.join(path_dict['pickle_val'], 'images_names_list.pickle')
 val_images_list = PickleImageData.unpickle_file(images_list_path)
