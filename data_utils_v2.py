@@ -13,11 +13,11 @@ import pandas as pd
 import shutil
 from general_utils import GPUConfig
 
-"""==========================================="""
-""" Another versions of the PickleImage class """
-""" and the CancerDataset class. Based on the """
-""" Stanford Tutorial.                        """
-"""==========================================="""
+""" =========================================== """
+""" Another versions of the PickleImage class   """
+""" and the CancerDataset class. Based on the   """
+""" Stanford Tutorial.                          """
+""" =========================================== """
 
 # Some directories configuration
 config = configparser.ConfigParser()
@@ -29,16 +29,17 @@ path_dict = config_class.get_paths_dict()
 class PickleImageData:
     """ ========================================================== """
     """ Produces three things:                                     """
-    """ 1. Directory with images pickled as tensors                """
+    """ 1. Directory with images pickled as tensors/pil images     """
     """ 2. list with name of files (list) in each directory        """
     """ 3. Dictionary. label (value) of each image file_name (key) """
     """ ========================================================== """
 
     def __init__(self, images_path, pickle_path, labels_path,
-                 img_transform=None, target_transform=None):
+                 img_type='tensor', img_transform=None, target_transform=None):
         self.images_path = images_path
         self.pickle_path = pickle_path
         self.labels_path = labels_path
+        self.img_type = img_type
         self.transform = img_transform
         self.target_transform = target_transform
 
@@ -78,20 +79,29 @@ class PickleImageData:
 
         return img_tensor
 
+    def pickle_pil_image(self, pil_img, file_name):
+        pickle_file_name = file_name.split('.')[0] + '.pickle'
+        img_pickle_path = os.path.join(self.pickle_path, pickle_file_name)
+        with open(img_pickle_path, 'wb') as fp:
+            pickle.dump(pil_img, fp)
+
     def pickle_tensor_image(self, tensor_img, file_name):
         """Convert a file to pickle file"""
         pickle_file_name = file_name.split('.')[0] + '.pt'
         img_pickle_path = os.path.join(self.pickle_path, pickle_file_name)
-        # output_file = open(img_pickle_path, 'wb')
         torch.save(tensor_img, img_pickle_path)
-        # output_file.close()
 
-    def pickle_all_images(self):
-        """ Pickle all the files in images list"""
+    def pickle_all_images(self, img_type):
+        """ Pickle all the files in images list. can pickle tensors/pil images"""
         for img_file_name in self.images_list:
             pil_img = self.image_to_pil(img_file_name)
-            tensor_img = self.pil_image_to_tensor(pil_img)
-            self.pickle_tensor_image(tensor_img, img_file_name)
+            if img_type == 'tensor':
+                tensor_img = self.pil_image_to_tensor(pil_img)
+                self.pickle_tensor_image(tensor_img, img_file_name)
+            elif img_type == 'pil':
+                self.pickle_pil_image(pil_img, img_file_name)
+            else:
+                print('Invalid image pickling type')
 
     def pickle_images_list(self):
         """Pickle the list of images name"""
@@ -109,7 +119,7 @@ class PickleImageData:
         output_file.close()
 
     def pickle_everything(self):
-        self.pickle_all_images()
+        self.pickle_all_images(img_type=self.img_type)
         self.pickle_images_list()
         self.pickle_labels_dict()
 
@@ -126,10 +136,9 @@ class PickleImageData:
 
         return data_object
 
-
 """ Pickle all files"""
-# test = PickleImageData(path_dict['val'], path_dict['pickle_val'], path_dict['labels'])
-# test.pickle_everything()
+test = PickleImageData(path_dict['train'], path_dict['pickle_train'], path_dict['labels'])
+test.pickle_everything()
 
 
 class CancerDataset(data.Dataset):
@@ -153,8 +162,12 @@ class CancerDataset(data.Dataset):
 
     def __getitem__(self, index):
         """Generate one sample data tensor and it's label"""
+        """Generate one sample data tensor and it's label"""
         img_name = self.images_list[index]
         X = torch.load(os.path.join(self.data_path, img_name + '.pt'))
+        if self.img_transform is not None:
+            X = self.img_transform(X)
+
         y = torch.tensor(self.labels_dict[img_name], dtype=torch.long)
 
         return X, y
@@ -208,7 +221,11 @@ class GeneralDataUtils:
             val_img_path = os.path.join(val_path, img + '.tif')
             shutil.move(train_img_path, val_img_path)
 
+
+
 """Move the images to val"""
-# move_files_to_val.train_val_split(path_dict['train'],
-#                                   path_dict['val'],
-#                                   path_dict['labels'])
+# move_files_to_val = GeneralDataUtils()
+# move_files_to_val.train_val_split('/Users/gzilbar/msc/side_projects/data/kaggle_1_data/train',
+#                                   path_dict['train'],
+#                                   path_dict['labels'],
+#                                   val_rate=0.001)
