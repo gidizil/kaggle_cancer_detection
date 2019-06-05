@@ -43,6 +43,8 @@ class Classifier:
         plt.plot(range(1, self.epochs + 1), train_loss_arr, label='Train Loss')
         plt.plot(range(1, self.epochs + 1), val_loss_arr, label='Validation Loss')
         plt.legend(loc='upper right')
+        plt.xlabel('Epoch')
+        plt.ylabel('Loss')
         plt.savefig(plot_path)
 
     def _set_device(self):
@@ -105,7 +107,7 @@ class Classifier:
         """ Test classifier. please provide test loader"""
         correct = 0
         total = 0
-        self.classifier.eval() # set to architecture to test mode (BN, dropout etc.)
+        self.classifier.eval()  # set to architecture to test mode (BN, dropout etc.)
         with torch.no_grad():
             for (images, labels) in test_loader:
                 images, labels = images.to(self.device), labels.to(self.device)
@@ -165,6 +167,14 @@ class Classifier:
         self.plot_train_val_loss(train_loss_arr, val_loss_arr)
 
     # TODO: add precision recall support
+    def calc_precision_recall(self, scores, labels):
+        """ Calcluate precision and recall for given scores and labels"""
+        pass
+
+    def visualize_training(self):
+        """Visualize the predictions for images for each label"""
+        pass
+
 
 
 
