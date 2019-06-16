@@ -86,11 +86,18 @@ class HyperParamsConfig():
     def __init__(self):
         self.has_gpu = torch.cuda.is_available()
         self.config = configparser.ConfigParser()
-        self.config.read_file(open(
-            r'/Users/gzilbar/msc/side_projects/kaggle_1/config.txt'))
+
+        self.set_config_path()
+        self.config.read_file(open(self.config_path))
         self.params_dict = {}
 
         self.get_params_dict()
+    def set_config_path(self):
+        """ Set config.txt path for the case of GPU/CPU"""
+        if self.has_gpu:
+            self.config_path = '/home/gzilbar/cancer_detection/config.txt'
+        else:
+            self.config_path = '/Users/gzilbar/msc/side_projects/kaggle_1/config.txt'
 
     def get_params_dict(self):
         """ Set all hyper params based on cpu/gpu"""
