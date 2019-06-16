@@ -68,8 +68,7 @@ class ModelUtils:
     def _flatten_img_dims(self):
         """ flatten 2D image into 1D array"""
         H, W = self.tmp_img_dims
-        flat_img = H * W
-        return flat_img
+        self.tmp_img_dims = int(H * W)
 
     def get_final_feature_map_dims(self):
         """Calculates all relevant dimensions to each layer"""
@@ -80,7 +79,7 @@ class ModelUtils:
             elif k.startswith('pool'):
                 self._get_conv_op_dims(*v)
 
-        return int(self._flatten_img_dims())
+        self._flatten_img_dims()
 
 
 test = ModelUtils(img_dims_in=48,
@@ -88,4 +87,5 @@ test = ModelUtils(img_dims_in=48,
                                          'pool1': ((2, 2), 2),
                                          'conv2': ((5, 5), ),
                                          'pool2': ((2, 2), 2)})
-print(np.sqrt(test.get_final_feature_map_dims()))
+test.get_final_feature_map_dims()
+print(test.tmp_img_dims)
