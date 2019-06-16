@@ -18,6 +18,7 @@ class ModelUtils:
 
         self._set_img_dims()
         self.tmp_img_dims = self.img_dims_in
+        self.final_f_maps_dims = None
 
     def _set_img_dims(self):
         """ handle image dims to tuple format. If None - Extract it"""
@@ -68,7 +69,7 @@ class ModelUtils:
     def _flatten_img_dims(self):
         """ flatten 2D image into 1D array"""
         H, W = self.tmp_img_dims
-        self.tmp_img_dims = int(H * W)
+        self.final_f_maps_dims = int(H * W)
 
     def get_final_feature_map_dims(self):
         """Calculates all relevant dimensions to each layer"""
@@ -82,10 +83,10 @@ class ModelUtils:
         self._flatten_img_dims()
 
 
-test = ModelUtils(img_dims_in=48,
-                  net_architecture_dict={'conv1': ((5, 5), ),
-                                         'pool1': ((2, 2), 2),
-                                         'conv2': ((5, 5), ),
-                                         'pool2': ((2, 2), 2)})
-test.get_final_feature_map_dims()
-print(test.tmp_img_dims)
+# test = ModelUtils(img_dims_in=48,
+#                   net_architecture_dict={'conv1': ((5, 5), ),
+#                                          'pool1': ((2, 2), 2),
+#                                          'conv2': ((5, 5), ),
+#                                          'pool2': ((2, 2), 2)})
+# test.get_final_feature_map_dims()
+# print(test.tmp_img_dims)
