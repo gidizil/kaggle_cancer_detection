@@ -62,6 +62,8 @@ class GPUConfig:
             path_dict['pickle_test'] = config.get('GPU', 'PICKLE_TEST_PATH')
             path_dict['labels'] = config.get('GPU', 'LABELS_PATH')
             path_dict['plots'] = config.get('GPU', 'PLOTS_PATH')
+            path_dict['means'] = config.get('GPU', 'CHANNELS_MEAN')
+            path_dict['epochs_num'] = int(config.get('GPU', 'EPOCHS'))
         else:
             path_dict['train'] = config.get('CPU', 'SMALL_TRAIN_PATH')
             path_dict['val'] = config.get('CPU', 'SMALL_VAL_PATH')
@@ -72,7 +74,40 @@ class GPUConfig:
             path_dict['pickle_test'] = config.get('CPU', 'PICKLE_S_TEST_PATH_V2')
             path_dict['labels'] = config.get('CPU', 'LABELS_PATH')
             path_dict['plots'] = config.get('CPU', 'PLOTS_PATH')
+            path_dict['means'] = config.get('CPU', 'CHANNELS_MEAN')
+            path_dict['epochs_num'] = int(config.get('CPU', 'EPOCHS'))
 
         return path_dict
 
+
+
+class HyperParamsConfig():
+    """ Set hyper params config. Conisder CPU/GPU"""
+    def __init__(self):
+        self.has_gpu = torch.cuda.is_available()
+        self.config = configparser.ConfigParser()
+        self.config.read_file(open(
+            r'/Users/gzilbar/msc/side_projects/kaggle_1/config.txt'))
+        self.params_dict = {}
+
+        self.get_params_dict()
+
+    def get_params_dict(self):
+        """ Set all hyper params based on cpu/gpu"""
+
+        if self.has_gpu:
+            self.params_dict['num_workers'] = int(self.config.get('GPU_H_PARAMS', 'NUM_WORKERS'))
+            self.params_dict['num_epochs'] = int(self.config.get('GPU_H_PARAMS', 'EPOCHS'))
+            self.params_dict['batch_size'] = int(self.config.get('GPU_H_PARAMS', 'BATCH_SIZE'))
+            self.params_dict['center_crop'] = int(self.config.get('GPU_H_PARAMS', 'CENTER_CROP'))
+            self.params_dict['lr'] = float(self.config.get('GPU_H_PARAMS', 'LR'))
+            self.params_dict['orig_img_size'] = int(self.config.get('GPU_H_PARAMS', 'ORIG_IMG_SIZE'))
+
+        else:
+            self.params_dict['num_workers'] = int(self.config.get('CPU_H_PARAMS', 'NUM_WORKERS'))
+            self.params_dict['num_epochs'] = int(self.config.get('CPU_H_PARAMS', 'EPOCHS'))
+            self.params_dict['batch_size'] = int(self.config.get('CPU_H_PARAMS', 'BATCH_SIZE'))
+            self.params_dict['center_crop'] = int(self.config.get('CPU_H_PARAMS', 'CENTER_CROP'))
+            self.params_dict['lr'] = float(self.config.get('CPU_H_PARAMS', 'LR'))
+            self.params_dict['orig_img_size'] = int(self.config.get('CPU_H_PARAMS', 'ORIG_IMG_SIZE'))
 
