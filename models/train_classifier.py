@@ -4,7 +4,8 @@ import torch.optim as optim
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from general_utils import GPUConfig
+from general_utils import GPUConfig, HyperParamsConfig
+
 import os
 
 
@@ -29,6 +30,9 @@ class Classifier:
     def __init__(self, classifier):
         self.classifier = classifier
         self.class_config = GPUConfig()
+        self.path_dict = self.class_config.get_paths_dict()
+        self.h_params_config = HyperParamsConfig()
+        self.h_params_dict = self.h_params_config.params_dict
         # TODO: handling **kwargs
 
         self.epochs = None
@@ -39,7 +43,7 @@ class Classifier:
     def plot_train_val_loss(self, train_loss_arr, val_loss_arr):
         """ Plot the training and validation error after each epoch"""
         path_dict = self.class_config.get_paths_dict()
-        plot_path= os.path.join(path_dict['plots'], 'train_val_loss.png')
+        plot_path = os.path.join(self.path_dict['plots'], 'train_val_loss.png')
         plt.plot(range(1, self.epochs + 1), train_loss_arr, label='Train Loss')
         plt.plot(range(1, self.epochs + 1), val_loss_arr, label='Validation Loss')
         plt.legend(loc='upper right')
@@ -56,13 +60,11 @@ class Classifier:
         """ in addition, set fixed seed"""
         if torch.cuda.is_available():
             self.classifier = nn.DataParallel(self.classifier)
-            self.epochs = 10
-        else:
-            self.epochs = 2
 
+        self.epochs = self.h_params_dict['num_epochs']
         self.classifier = self.classifier.to(self.device)
 
-    #TODO: work with kwargs to enable more params
+    # TODO: work with kwargs to enable more params
     def set_loss_function(self):
         """setting loss function and optimization method."""
         # TODO: allow things that aren't adam
@@ -162,6 +164,7 @@ class Classifier:
 
             train_loss_arr.append(train_loss)
             val_loss_arr.append(val_loss)
+
 
         # TODO: plot train and val loss for each epoch - Make sure everything goes down
         self.plot_train_val_loss(train_loss_arr, val_loss_arr)
