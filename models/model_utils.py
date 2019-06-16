@@ -1,12 +1,12 @@
 import numpy as np
 from general_utils import HyperParamsConfig
 
-""" =================================== """
-""" Class with multiple helper methods  """
-""" That different modeles can inherit  """
-""" and to better automate to procedure """
-""" of model creation.                  """
-""" =================================== """
+""" ================================== """
+""" Class with multiple helper methods """
+""" That different models can inherit  """
+""" and to better automate the         """
+""" procedure of model creation.       """
+""" ================================== """
 
 
 class ModelUtils:
@@ -33,10 +33,9 @@ class ModelUtils:
         else:
             print('Input should be a tuple or a list')
 
-
     def _get_conv_op_dims(self, conv_filter, stride=1, pad=0):
         """
-        calculate the output feature map after a conv2d operation
+        calculate the output size of feature map after a conv2d operation
         :param conv_filter: tuple. (h, w)
         :param stride: int. stride size, defaults to 1
         :param pad: int. padding size from each side. Defaults to 0
@@ -53,7 +52,7 @@ class ModelUtils:
 
     def _get_pool_op_dims(self, pad, stride=1):
         """
-        calculate the output feature map after a pooling operation
+        calculate the output size of feature map after a pooling operation
         :param pad: tuple. (p_h, p_w)
         :param stride: int. stride size, defaults to 1
         :return: tuple (H_out, W_out). dimensions of feature maps after conv2d
@@ -83,39 +82,6 @@ class ModelUtils:
 
         return int(self._flatten_img_dims())
 
-
-""" Example for architecture_dict: """
-""" {} """
-"""
-        self.conv1 = nn.Conv2d(3, 16, 5)
-        self.conv1_bn_2d = nn.BatchNorm2d(16)
-        self.pool = nn.MaxPool2d(2,2)
-        self.conv2 = nn.Conv2d(16, 128, 5)
-        self.conv2_bn_2d = nn.BatchNorm2d(128)
-        self.fc1 = nn.Linear(128*21*21, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 2)
-        
-        
-        # 1. Conv part of network
-        x = self.conv1(x)
-        x = self.conv1_bn_2d(x)
-        x = F.relu(x)
-        x = self.pool(x)
-
-        x = self.conv2(x)
-        x = self.conv2_bn_2d(x)
-        x = F.relu(x)
-        x = self.pool(x)
-
-        # 2. Feed Forward part of network
-        x = x.view(-1, 128 * 21 * 21)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
-
-"""
 
 test = ModelUtils(img_dims_in=48,
                   net_architecture_dict={'conv1': ((5, 5), ),
