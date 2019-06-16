@@ -20,6 +20,7 @@ from general_utils import GPUConfig
 """ =========================================== """
 
 # Some directories configuration
+# TODO: add GPUConfig inside each class
 config = configparser.ConfigParser()
 config.read_file(open(r'config.txt'))
 config_class = GPUConfig()
@@ -137,8 +138,8 @@ class PickleImageData:
         return data_object
 
 """ Pickle all files"""
-test = PickleImageData(path_dict['train'], path_dict['pickle_train'], path_dict['labels'])
-test.pickle_everything()
+# test = PickleImageData(path_dict['train'], path_dict['pickle_train'], path_dict['labels'])
+# test.pickle_everything()
 
 
 class CancerDataset(data.Dataset):
@@ -148,7 +149,7 @@ class CancerDataset(data.Dataset):
     """ tensor. y is an integer                """
     """ ====================================== """
 
-    def __init__(self, data_path,labels_dict, images_list,
+    def __init__(self, data_path, labels_dict, images_list,
                  img_transform=None, target_transform=None):
         self.data_path = data_path
         self.labels_dict = labels_dict
@@ -221,6 +222,35 @@ class GeneralDataUtils:
             val_img_path = os.path.join(val_path, img + '.tif')
             shutil.move(train_img_path, val_img_path)
 
+    def get_bgr_channels_mean(self, images_path, save_path):
+        """Return the mean valus in each channel across all pictures"""
+        images_list = self._get_files_in_dir(images_path) # set path of original images - not tensors
+
+        # 1. Understand image dims:
+        img_path = os.path.join(images_path, images_list[0] + '.tif')
+        bgr_img = Image.open(img_path)
+        bgr_np = np.array(bgr_img)
+        n_dims = len(bgr_np.shape)
+        bgr_mean = np.zeros(shape=(bgr_np.shape[-1],))
+
+        for image in images_list:
+            img_path = os.path.join(images_path, image + '.tif')
+            bgr_img = Image.open(img_path)
+            bgr_np = np.array(bgr_img)
+
+            #print(bgr_np.shape)
+            # add the mean in each channel - image format is HxWxC
+            bgr_mean += np.mean(bgr_np, axis=tuple(range(0, n_dims-1)))
+
+        # 2. Divide each channel by the number of images
+        bgr_mean /= len(images_list)
+
+        # 3. Store image means as pickle to to the pickled train directory
+        channel_mean_pickle_path = os.path.join(save_path, 'channels_mean.pickle')
+        output_file = open(channel_mean_pickle_path, 'wb')
+        pickle.dump(bgr_mean, output_file)
+        output_file.close()
+
 
 
 """Move the images to val"""
@@ -229,3 +259,8 @@ class GeneralDataUtils:
 #                                   path_dict['train'],
 #                                   path_dict['labels'],
 #                                   val_rate=0.001)
+
+# Get images mean per channel
+
+# gen = GeneralDataUtils()
+# gen.get_bgr_channels_mean(path_dict['train'], path_dict['pickle_train'])
