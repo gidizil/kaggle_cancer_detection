@@ -55,7 +55,7 @@ val_loader = torch.utils.data.DataLoader(val_set, batch_size=h_params_dict['batc
                                          worker_init_fn=SetSeeds._init_fn)
 
 # 5. Train Network
-net = Net()
+net = Net(h_params_dict['center_crop'])
 net_classifier = Classifier(net)
 
 net_classifier.fit_and_eval(train_loader, val_loader)
