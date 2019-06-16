@@ -31,7 +31,7 @@ class ModelUtils:
         elif isinstance(self.img_dims_in, (list, tuple)):
             pass
         else:
-            print('Input should be a tuple or a list')
+            print('Input should be a int, tuple or a list')
 
     def _get_conv_op_dims(self, conv_filter, stride=1, pad=0):
         """
