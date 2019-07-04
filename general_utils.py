@@ -80,8 +80,7 @@ class GPUConfig:
         return path_dict
 
 
-
-class HyperParamsConfig():
+class HyperParamsConfig:
     """ Set hyper params config. Conisder CPU/GPU"""
     def __init__(self):
         self.has_gpu = torch.cuda.is_available()
@@ -92,6 +91,7 @@ class HyperParamsConfig():
         self.params_dict = {}
 
         self.get_params_dict()
+
     def set_config_path(self):
         """ Set config.txt path for the case of GPU/CPU"""
         if self.has_gpu:
@@ -109,6 +109,8 @@ class HyperParamsConfig():
             self.params_dict['center_crop'] = int(self.config.get('GPU_H_PARAMS', 'CENTER_CROP'))
             self.params_dict['lr'] = float(self.config.get('GPU_H_PARAMS', 'LR'))
             self.params_dict['orig_img_size'] = int(self.config.get('GPU_H_PARAMS', 'ORIG_IMG_SIZE'))
+            self.params_dict['resize'] = int(self.config.get('GPU_H_PARAMS', 'IMG_RESIZE'))
+            self.params_dict['loss_func'] = self.config.get('GPU_H_PARAMS', 'LOSS')
 
         else:
             self.params_dict['num_workers'] = int(self.config.get('CPU_H_PARAMS', 'NUM_WORKERS'))
@@ -117,4 +119,5 @@ class HyperParamsConfig():
             self.params_dict['center_crop'] = int(self.config.get('CPU_H_PARAMS', 'CENTER_CROP'))
             self.params_dict['lr'] = float(self.config.get('CPU_H_PARAMS', 'LR'))
             self.params_dict['orig_img_size'] = int(self.config.get('CPU_H_PARAMS', 'ORIG_IMG_SIZE'))
-
+            self.params_dict['resize'] = int(self.config.get('CPU_H_PARAMS', 'IMG_RESIZE'))
+            self.params_dict['loss_func'] = self.config.get('CPU_H_PARAMS', 'LOSS')
