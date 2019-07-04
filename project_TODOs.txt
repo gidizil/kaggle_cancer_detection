@@ -1,9 +1,9 @@
 
 # TODO:
-1. plot loss function of training (pay attention to GPU mode)
-2. fix the ssh linux no matplotlib.
-2. create a train_and_eval method in Classifier. - New branch
-3. plot train/val from the train and eval method
+1. plot loss function of training (pay attention to GPU mode) - DONE
+2. fix the ssh linux no matplotlib - DONE
+2. create a train_and_eval method in Classifier. - New branch - DONE
+3. plot train/val from the train and eval method - DONE
 4. Use other metrices other than loss ( accuracy, precision, recall) etc. Create/Find metrics class
 5. visualize batch before network
 6. learn work with .git ignore. move config, and all other text data
@@ -12,3 +12,11 @@
 9. Make GPU and CPU config - PATHS- DONE
 10. Split to train and val on gpu - DONE
 11. invest time in transformations and augmentations
+12. And support for hyper-parameters
+13. Understand pytorch basic weight initiliaztion - Understand - just uniform with mean zero - Done
+14. Visualize results on distinct set during training (use probas and labels). - See how the identification occurs
+15. tensorboard support - wait for a more stable version with more tutorials
+16. Data centering - Mean 0 in each channel
+17. Plot the change in weights and biases through training epochs (plot average and relative)
+18. improve plotting capabilities - pass information with net and training to add to the plot
+19. Handle hyper_params and and pre_proc_params in different dictionaries
