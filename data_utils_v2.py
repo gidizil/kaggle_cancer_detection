@@ -232,6 +232,7 @@ class GeneralDataUtils:
         bgr_np = np.array(bgr_img)
         n_dims = len(bgr_np.shape)
         bgr_mean = np.zeros(shape=(bgr_np.shape[-1],))
+        bgr_std = np.zeros(shape=(bgr_np.shape[-1],))
 
         for image in images_list:
             img_path = os.path.join(images_path, image + '.tif')
@@ -241,6 +242,7 @@ class GeneralDataUtils:
             #print(bgr_np.shape)
             # add the mean in each channel - image format is HxWxC
             bgr_mean += np.mean(bgr_np, axis=tuple(range(0, n_dims-1)))
+            bgr_std += np.std(bgr_np, axis=tuple(range(0, n_dims-1)))
 
         # 2. Divide each channel by the number of images
         bgr_mean /= len(images_list)
@@ -251,6 +253,15 @@ class GeneralDataUtils:
         pickle.dump(bgr_mean, output_file)
         output_file.close()
 
+    # def get_bgr_channels_mean_std(self, ):
+    #     """ Compute channels mean and std """
+    #     for i, (images, labels) in enumerate(train_loader, 0):
+    #         # set params and all others to train mode
+    #         # TODO: is possible to set classifier outside training loop
+    #         self.classifier.train()
+    #         # pass data gpu (if exists)
+    #         images = images.to(self.device)
+    #         labels = labels.to(self.device)
 
 
 """Move the images to val"""
