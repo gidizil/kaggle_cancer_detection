@@ -32,10 +32,12 @@ class Transformations:
 
         self.base_transform = None
         self.center_crop = None
+        self.resize = None
 
         # 2. set required params
         self.set_base_transform()
         self.set_center_crop_transform()
+        self.set_resize_transform()
 
     # 3. Initialize all transformers
     def get_channels_mean(self):
@@ -53,22 +55,36 @@ class Transformations:
             self.params['means'] = self.get_channels_mean()
 
         self.base_transform = transforms.Compose([
-            transforms.Normalize(self.params['means'], (1, 1, 1))
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225])
         ])
 
     def set_center_crop_transform(self):
         if self.params.get('crop_size', None) is not None:
-            self.center_crop = transforms.Compose([
-                transforms.Normalize(self.params['means'], (1, 1, 1)),  # TODO: add params of mean
-                transforms.ToPILImage(),
-                transforms.CenterCrop(size=self.params['crop_size']),
-                transforms.ToTensor()
+            if self.params.get('crop_size', None) is not None:
+                self.center_crop = transforms.Compose([
+                    transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                         std=[0.229, 0.224, 0.225]),  # TODO: add params of mean
+                    transforms.ToPILImage(),
+                    transforms.CenterCrop(size=self.params['crop_size']),
+                    transforms.ToTensor()
+                ])
+
+    def set_resize_transform(self):
+        if self.params.get('resize', None) is not None:
+            self.resize = transforms.Compose([
+                transforms.ToPILImage(),  # Convert np array to PILImage
+                transforms.Resize(size=self.params['resize']),  # 224x224 is standard for most models
+                transforms.ToTensor(),
+                #transforms.Normalize(self.params['means'], (1.0, 1.0, 1.0))  # TODO: Add mean and std
+                transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
             ])
 
 
 
 
-#Working with **kwargs
+# Working with **kwargs
 #
 # class TryKwargs:
 #     def __init__(self):
