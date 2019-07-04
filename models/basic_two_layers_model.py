@@ -1,7 +1,9 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from models.model_utils import ModelUtils
 from collections import OrderedDict
+
 
 class Net(nn.Module, ModelUtils):
     def __init__(self, img_dims=None):
@@ -26,7 +28,8 @@ class Net(nn.Module, ModelUtils):
         self.conv2_bn_2d = nn.BatchNorm2d(128)
         self.fc1 = nn.Linear(128 * self.final_f_map_dims, 120)
         self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 2)
+        self.fc3 = nn.Linear(84, 1) # For bce loss only one value is needed
+
 
     def forward(self, x):
         # 1. Conv part of network
@@ -45,6 +48,7 @@ class Net(nn.Module, ModelUtils):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
+        x = torch.sigmoid(x) # F.sigmoid is soon deprecated
         return x
 
 
