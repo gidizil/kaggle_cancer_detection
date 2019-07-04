@@ -8,13 +8,13 @@ import random
 from sklearn.utils import shuffle
 from tqdm import tqdm_notebook
 import configparser
+import random
+import torch
+import torchvision.transforms as transforms
+from general_utils import GPUConfig
 
-
-config = configparser.ConfigParser()
-config.read_file(open(r'config.txt'))
-TRAIN_PATH = config.get('PATHS', 'TRAIN_PATH')
-LABELS_PATH = config.get('PATHS', 'LABELS_PATH')
-
+config_class = GPUConfig()
+path_dict = config_class.get_paths_dict()
 
 """Methods to visualize all the images"""
 
@@ -58,8 +58,8 @@ class ReviewImages:
 
         self.img_df = None
 
-        self.build_img_data_frames()
-        self.apply_all_methods()
+        # self.build_img_data_frames()
+        # self.apply_all_methods()
 
     def build_img_data_frames(self):
         """Build initial DataFrame of img_name and their label"""
@@ -91,7 +91,7 @@ class ReviewImages:
 
         # positive samples
         for i, img in enumerate(pos_img_list):
-            img_path = os.path.join(TRAIN_PATH, img + '.tif')
+            img_path = os.path.join(path_dict['train'], img + '.tif')
             ax[1, i].imshow(self.read_image(img_path))
             box = patches.Rectangle((32, 32), 32, 32, linewidth=4,
                                     edgecolor='b', linestyle=':',
@@ -154,6 +154,26 @@ class ReviewImages:
                      'b_energy', 'mean', 'std']] = \
             self.img_df.apply(lambda row: self.calc_all_statistics(row['id']),
                               axis=1)
+
+    @staticmethod
+    def visualize_before_net(tensor_img_path, img_transform):
+        """ Visualize the data that is fed to the network"""
+        # 1. Select a random image
+        tensor_images_list = [im for im in os.listdir(tensor_img_path)
+                              if os.path.isfile(os.path.join(tensor_img_path, im))]
+
+        rand_int = random.randint(0, len(tensor_images_list))
+        tnsr_img_name = tensor_images_list[rand_int]
+        tnsr_img_path = os.path.join(tensor_img_path, tnsr_img_name)
+
+        # 2. Apply transformations
+        tnsr_img = torch.load(tnsr_img_path)
+        trans_img = img_transform(tnsr_img)
+
+        # 3. Show image
+        pil_transform = transforms.Compose([transforms.ToPILImage()])
+        pil_img = pil_transform(trans_img)
+        pil_img.show()
 
 
 #test_instance = ReviewImages(TRAIN_PATH, LABELS_PATH)
