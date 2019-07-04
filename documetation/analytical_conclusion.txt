@@ -1,0 +1,18 @@
+""" ========================== """
+""" This is the place to write """
+""" all analytical Conclusions """
+""" and questions that arise   """
+""" from analytically testing  """
+""" the models and configs.    """
+""" ========================== """
+
+Conclusions
+=============
+1. Under default params, basic model overfit really fast
+
+
+questions
+=========
+1. How does learning rate affect overfitting - From a small check it does not seem to affect.
+1. How does batch size affect overfitting - Does not seem to affect.
+2. How does bias and weights changing during training
