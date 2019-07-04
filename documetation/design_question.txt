@@ -1,0 +1,1 @@
+1. Is it ok that I use 'config' as a GLOBAL all the time?
