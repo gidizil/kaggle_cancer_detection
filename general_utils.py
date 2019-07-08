@@ -63,7 +63,8 @@ class GPUConfig:
             path_dict['labels'] = config.get('GPU', 'LABELS_PATH')
             path_dict['plots'] = config.get('GPU', 'PLOTS_PATH')
             path_dict['means'] = config.get('GPU', 'CHANNELS_MEAN')
-            path_dict['epochs_num'] = int(config.get('GPU', 'EPOCHS'))
+            path_dict['saved_models'] = config.get('GPU','SAVED_MODELS_PATH')
+
         else:
             path_dict['train'] = config.get('CPU', 'SMALL_TRAIN_PATH')
             path_dict['val'] = config.get('CPU', 'SMALL_VAL_PATH')
@@ -75,7 +76,7 @@ class GPUConfig:
             path_dict['labels'] = config.get('CPU', 'LABELS_PATH')
             path_dict['plots'] = config.get('CPU', 'PLOTS_PATH')
             path_dict['means'] = config.get('CPU', 'CHANNELS_MEAN')
-            path_dict['epochs_num'] = int(config.get('CPU', 'EPOCHS'))
+            path_dict['saved_models'] = config.get('CPU', 'SAVED_MODELS_PATH')
 
         return path_dict
 
