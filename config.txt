@@ -14,6 +14,7 @@ LABELS_PATH = /var/data/cancer_detection_data/train_labels.csv
 CHANNELS_MEAN = /var/data/cancer_detection_data/pickle_data/train/channels_mean.pickle
 
 PLOTS_PATH = /home/gzilbar/cancer_detection/plots
+SAVED_MODELS_PATH = /home/gzilbar/cancer_detection/models/saved_models
 
 [CPU]
 NUM_WORKERS = 2
@@ -36,6 +37,7 @@ LABELS_PATH = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/train_labels.c
 CHANNELS_MEAN = /Users/gzilbar/msc/side_projects/data/kaggle_1_data/pickle_files/small_train_v2/channels_mean.pickle
 
 PLOTS_PATH = /Users/gzilbar/msc/side_projects/kaggle_1/plots
+SAVED_MODELS_PATH = /Users/gzilbar/msc/side_projects/kaggle_1/models/saved_models
 
 
 [GPU_H_PARAMS]
@@ -45,15 +47,15 @@ LR = 0.0003
 BATCH_SIZE = 256
 CENTER_CROP = 48
 ORIG_IMG_SIZE = 96
-IMG_RESIZE = 224
+IMG_RESIZE = 192
 LOSS = bce
 
 [CPU_H_PARAMS]
 NUM_WORKERS = 2
-EPOCHS = 2
+EPOCHS = 15
 LR = 0.0003
 BATCH_SIZE = 64
 CENTER_CROP = 48
 ORIG_IMG_SIZE = 96
-IMG_RESIZE = 224
+IMG_RESIZE = 192
 LOSS = bce
