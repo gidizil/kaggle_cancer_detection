@@ -81,10 +81,9 @@ class Classifier:
                 # Forward pass
                 scores = self.classifier(images)
 
-                if self.h_params_dict['loss'] == 'bce':
-                    print(type(labels.view(-1, 1).float()))
+                if self.h_params_dict['loss_func'] == 'bce':
                     loss = criterion(scores, labels.view(-1, 1).float())
-                elif self.h_params_dict['loss'] == 'cross_entropy':
+                elif self.h_params_dict['loss_func'] == 'cross_entropy':
                     loss = criterion(scores, labels)
 
                 # Backward pass
@@ -92,7 +91,7 @@ class Classifier:
                 loss.backward()
                 optimizier.step()
 
-                running_loss += loss.item()
+                running_loss += loss.item() * labels.size(0)
 
                 # print average loss in last few steps
                 if i % 10 == 9:
@@ -129,39 +128,35 @@ class Classifier:
             total_samples = 0.0
             # train and calculate loss in epoch
             self.classifier.train()
-            for i, (images, labels) in enumerate(train_loader):
-                # set to train mode
-                # TODO: is possible to set classifier outside training loop
+            with torch.set_grad_enabled(True):
+                for i, (images, labels) in enumerate(train_loader):
+                    # set to train mode
+                    # TODO: is possible to set classifier outside training loop
 
-                # pass data to gpu:
-                images = images.to(self.device)
-                labels = labels.to(self.device)
+                    # pass data to gpu:
+                    images = images.to(self.device)
+                    labels = labels.to(self.device)
 
-                # Forward pass:
-                optimizier.zero_grad()
+                    # Forward pass:
+                    optimizier.zero_grad()
 
-                scores = self.classifier(images)
-                if self.h_params_dict['loss_func'] == 'bce':
-                    labels = labels.view(-1, 1).float()
-                    loss = criterion(scores, labels)
-                elif self.h_params_dict['loss_func'] == 'cross_entropy':
-                    loss = criterion(scores, labels)
+                    scores = self.classifier(images)
+                    if self.h_params_dict['loss_func'] == 'bce':
+                        labels = labels.view(-1, 1).float()
+                        loss = criterion(scores, labels)
+                    elif self.h_params_dict['loss_func'] == 'cross_entropy':
+                        loss = criterion(scores, labels)
 
-                # Backward pass and weight update:
-                loss.backward()
-                optimizier.step()
+                    # Backward pass and weight update:
+                    loss.backward()
+                    optimizier.step()
 
-                train_loss += loss.item() * labels.size()[0]
-
+                    train_loss += loss.item() * labels.size()[0]
 
             # set classifier to eval mode:
             self.classifier.eval()
             with torch.no_grad():
-
-            #     for name, param in self.classifier.named_parameters():
-            #         if param.requires_grad:
-            #             print(name, param.data)
-            #     for i, (images, labels) in enumerate(val_loader):
+                for i, (images, labels) in enumerate(val_loader):
 
                     # pass device to gpu
                     images = images.to(self.device)
@@ -184,7 +179,7 @@ class Classifier:
 
             print('Epoch:', epoch+1, ', Train Loss:', train_loss / len(train_loader.dataset))
             print('Epoch:', epoch+1, ', val Loss:', val_loss / len(val_loader.dataset))
-            print('Validation Accuracy:', total_corrcets / total_samples)
+            print('Validation Accuracy:', total_corrcets / total_samples, '\n')
             accuracy_arr.append(total_corrcets / total_samples)
             train_loss_arr.append(train_loss / len(train_loader.dataset))
             val_loss_arr.append(val_loss / len(val_loader.dataset))
