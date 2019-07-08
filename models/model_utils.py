@@ -1,5 +1,6 @@
-import numpy as np
-from general_utils import HyperParamsConfig
+import torch
+from general_utils import HyperParamsConfig, GPUConfig
+import os
 
 """ ================================== """
 """ Class with multiple helper methods """
@@ -61,14 +62,18 @@ class ModelUtils:
         H, W = self.tmp_img_dims
         p_h, p_w = pad
 
-        H_out = 1 + (H - p_h) / stride
-        W_out = 1 + (W - p_w) / stride
+        H_out = int(1 + (H - p_h) / stride)
+        W_out = int(1 + (W - p_w) / stride)
 
         self.tmp_img_dims = (H_out, W_out)
 
     def _flatten_img_dims(self):
         """ flatten 2D image into 1D array"""
         H, W = self.tmp_img_dims
+
+        # In case pooling compute is not full integer:
+        H, W = int(H), int(W)
+
         self.final_f_maps_dims = int(H * W)
 
     def get_final_feature_map_dims(self):
@@ -78,9 +83,10 @@ class ModelUtils:
                 self._get_conv_op_dims(*v)
 
             elif k.startswith('pool'):
-                self._get_conv_op_dims(*v)
+                self._get_pool_op_dims(*v)
 
         self._flatten_img_dims()
+
 
 
 # test = ModelUtils(img_dims_in=48,
