@@ -26,6 +26,8 @@ class Net(nn.Module, ModelUtils):
         self.pool = nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(16, 128, 5)
         self.conv2_bn_2d = nn.BatchNorm2d(128)
+        #self.conv3 = nn.Conv2d(64, 128, 5)
+        #self.conv3_bn_2d = nn.BatchNorm2d(128)
         self.fc1 = nn.Linear(128 * self.final_f_map_dims, 120)
         self.fc2 = nn.Linear(120, 84)
         self.fc3 = nn.Linear(84, 1)  # For bce loss only one value is needed
