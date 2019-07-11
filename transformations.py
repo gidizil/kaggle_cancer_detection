@@ -34,15 +34,19 @@ class Transformations:
         self.center_crop = None
         self.resize = None
         self.crop_resize = None
+        self.basic_augment = None
+        self.rand_augment = None
 
         # 2. set required params
-        self.set_base_transform()
-        self.set_center_crop_transform()
-        self.set_resize_transform()
-        self.set_crop_resize_transform()
+        self._set_base_transform()
+        self._set_center_crop_transform()
+        self._set_resize_transform()
+        self._set_crop_resize_transform()
+        self._set_basic_augmentations_transform()
+        self._randomly_augment_transform()
 
     # 3. Initialize all transformers
-    def get_channels_mean(self):
+    def _get_channels_mean(self):
         pickle_means = open(self.path_dict['means'], 'rb')
         if sys.version_info[0] == 2:
             np_means = pickle.load(pickle_means)
@@ -52,17 +56,17 @@ class Transformations:
         return np_means
 
     # TODO: allow to work with stds
-    def set_base_transform(self):
+    def _set_base_transform(self):
         """ Normalize image on;t"""
         if self.params.get('means', None) is None:
-            self.params['means'] = self.get_channels_mean()
+            self.params['means'] = self._get_channels_mean()
 
         self.base_transform = transforms.Compose([
             transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])
         ])
 
-    def set_center_crop_transform(self):
+    def _set_center_crop_transform(self):
         """ Crop central part of image and normalize"""
         if self.params.get('crop_size', None) is not None:
             if self.params.get('crop_size', None) is not None:
@@ -74,7 +78,7 @@ class Transformations:
                     transforms.ToTensor()
                 ])
 
-    def set_resize_transform(self):
+    def _set_resize_transform(self):
         """ Resize and normalize image """
         if self.params.get('resize', None) is not None:
             self.resize = transforms.Compose([
@@ -85,7 +89,7 @@ class Transformations:
                                      std=[0.229, 0.224, 0.225])
             ])
 
-    def set_crop_resize_transform(self):
+    def _set_crop_resize_transform(self):
         """ Center crop and resize """
         is_resize = self.params.get('resize', None) is not None
         is_center_crop = self.params.get('crop_size', None) is not None
@@ -99,11 +103,77 @@ class Transformations:
                                      std=[0.229, 0.224, 0.225])
             ])
 
-
-    def set_augmentations_transform(self):
+    def _set_basic_augmentations_transform(self):
         """ A series of random augmentations to the image. then normalize """
-        pass
+        is_resize = self.params.get('resize', None) is not None
+        is_center_crop = self.params.get('crop_size', None) is not None
 
+        # Consider all cases of available params
+        if (not is_resize) and (not is_center_crop):
+            self.basic_augment = transforms.Compose([
+                transforms.ToPILImage(),
+                transforms.ColorJitter(hue=.05, saturation=.05),
+                transforms.RandomRotation(degrees=(-45, 45)),
+                transforms.RandomHorizontalFlip(p=0.5),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
+                
+            ])
+
+        elif (not is_resize) and is_center_crop:
+            self.basic_augment = transforms.Compose([
+                transforms.ToPILImage(),
+                transforms.ColorJitter(hue=.05, saturation=.05),
+                transforms.RandomHorizontalFlip(p=0.5),
+                transforms.RandomRotation(degrees=(-45, 45)),
+                transforms.CenterCrop(size=self.params['crop_size']),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
+
+            ])
+
+        elif is_resize and (not is_center_crop):
+            self.basic_augment = transforms.Compose([
+                transforms.ToPILImage(),
+                transforms.ColorJitter(hue=.05, saturation=.05),
+                transforms.RandomHorizontalFlip(p=0.5),
+                transforms.RandomRotation(degrees=(-45, 45)),
+                transforms.Resize(size=self.params['resize']),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
+
+            ])
+
+        else:
+            self.basic_augment = transforms.Compose([
+                transforms.ToPILImage(),
+                transforms.RandomHorizontalFlip(p=0.5),
+                transforms.RandomRotation(degrees=(-45, 45)),
+                transforms.CenterCrop(size=self.params['crop_size']),
+                transforms.ColorJitter(hue=.05, saturation=.05),
+                transforms.Resize(size=self.params['resize']),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
+
+            ])
+
+    def _randomly_augment_transform(self):
+        is_resize = self.params.get('resize', None) is not None
+        is_center_crop = self.params.get('crop_size', None) is not None
+        assert (is_resize and is_center_crop), \
+            'Class instance must have resize and center_crop args'
+
+        self.rand_augment = transforms.Compose([
+            transforms.RandomChoice([
+                self.crop_resize,
+                self.basic_augment,
+                self.basic_augment
+            ])
+        ])
 
 
 
