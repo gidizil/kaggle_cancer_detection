@@ -5,6 +5,7 @@ import configparser
 from models.basic_two_layers_model_copy import Net
 from models.three_layers_model import Net
 from models.four_layers_model import Net
+#from models.five_layers_double_conv_model import Net
 # from models.resnet50 import Net
 from models.train_classifier import Classifier
 import os
@@ -38,12 +39,18 @@ SetSeeds.seed_torch()
 transformers = Transformations(crop_size=h_params_dict['center_crop'],
                                resize=h_params_dict['resize']
                                )
+
+
+
+# TODO: Create a method to elegently produce the one you want
 center_crop = transformers.center_crop
 resize = transformers.resize
 crop_resize = transformers.crop_resize
+basic_augment = transformers.basic_augment
+rand_augment = transformers.rand_augment
 
 # Choose desired transform
-final_transform = crop_resize
+final_transform = rand_augment
 
 train_set = CancerDataset(path_dict['pickle_train'],
                           tr_labels_dict, tr_images_list,
@@ -64,9 +71,10 @@ val_loader = torch.utils.data.DataLoader(val_set, batch_size=h_params_dict['batc
                                          worker_init_fn=SetSeeds._init_fn)
 
 # 5. Train Network
+# TODO: Handle this to work seamlessly with the transform
 if final_transform == center_crop:
     net = Net(h_params_dict['center_crop'])
-elif final_transform == crop_resize:
+elif final_transform in [crop_resize, basic_augment, rand_augment]:
     net = Net(h_params_dict['resize'])
 else:
     net = Net()
