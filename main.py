@@ -50,11 +50,12 @@ basic_augment = transformers.basic_augment
 rand_augment = transformers.rand_augment
 
 # Choose desired transform
-final_transform = rand_augment
+train_transform = basic_augment
+val_transform = crop_resize
 
 train_set = CancerDataset(path_dict['pickle_train'],
                           tr_labels_dict, tr_images_list,
-                          img_transform=final_transform)
+                          img_transform=train_transform)
 
 train_loader = torch.utils.data.DataLoader(train_set, batch_size=h_params_dict['batch_size'],
                                            shuffle=True, num_workers=h_params_dict['num_workers'],
@@ -64,7 +65,7 @@ train_loader = torch.utils.data.DataLoader(train_set, batch_size=h_params_dict['
 # 4B. Build Dataset and DataLoader for validation
 val_set = CancerDataset(path_dict['pickle_val'],
                         val_labels_dict, val_images_list,
-                        img_transform=final_transform)
+                        img_transform=val_transform)
 
 val_loader = torch.utils.data.DataLoader(val_set, batch_size=h_params_dict['batch_size'],
                                          shuffle=True, num_workers=h_params_dict['num_workers'],
@@ -72,9 +73,9 @@ val_loader = torch.utils.data.DataLoader(val_set, batch_size=h_params_dict['batc
 
 # 5. Train Network
 # TODO: Handle this to work seamlessly with the transform
-if final_transform == center_crop:
+if train_transform == center_crop:
     net = Net(h_params_dict['center_crop'])
-elif final_transform in [crop_resize, basic_augment, rand_augment]:
+elif train_transform in [crop_resize, basic_augment, rand_augment]:
     net = Net(h_params_dict['resize'])
 else:
     net = Net()
