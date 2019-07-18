@@ -45,6 +45,8 @@ class Transformations:
         self._set_basic_augmentations_transform()
         self._randomly_augment_transform()
 
+        self._set_transform_dict()
+
     # 3. Initialize all transformers
     def _get_channels_mean(self):
         pickle_means = open(self.path_dict['means'], 'rb')
@@ -175,6 +177,22 @@ class Transformations:
             ])
         ])
 
+    def _set_transform_dict(self):
+        """ Create a dictionary with all of the transforms """
+        self.transform_dict = {
+            'base_transform': self.base_transform,
+            'center_crop': self.center_crop,
+            'resize': self.resize,
+            'crop_resize': self.crop_resize,
+            'basic_augment': self.basic_augment,
+            'rand_augment': self.rand_augment
+        }
+
+    def set_transform(self, transform_name):
+        """ select a transform given it's name """
+        assert (transform_name is not None), 'Transform name must be provided'
+
+        return self.transform_dict[transform_name]
 
 
 # Working with **kwargs
