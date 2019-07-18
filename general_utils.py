@@ -112,6 +112,8 @@ class HyperParamsConfig:
             self.params_dict['orig_img_size'] = int(self.config.get('GPU_H_PARAMS', 'ORIG_IMG_SIZE'))
             self.params_dict['resize'] = int(self.config.get('GPU_H_PARAMS', 'IMG_RESIZE'))
             self.params_dict['loss_func'] = self.config.get('GPU_H_PARAMS', 'LOSS')
+            self.params_dict['tr_transform'] = self.config.get('GPU_H_PARAMS', 'TRAIN_TRANS')
+            self.params_dict['val_transform'] = self.config.get('GPU_H_PARAMS', 'VAL_TRANS')
 
         else:
             self.params_dict['num_workers'] = int(self.config.get('CPU_H_PARAMS', 'NUM_WORKERS'))
@@ -122,3 +124,24 @@ class HyperParamsConfig:
             self.params_dict['orig_img_size'] = int(self.config.get('CPU_H_PARAMS', 'ORIG_IMG_SIZE'))
             self.params_dict['resize'] = int(self.config.get('CPU_H_PARAMS', 'IMG_RESIZE'))
             self.params_dict['loss_func'] = self.config.get('CPU_H_PARAMS', 'LOSS')
+            self.params_dict['tr_transform'] = self.config.get('CPU_H_PARAMS', 'TRAIN_TRANS')
+            self.params_dict['val_transform'] = self.config.get('CPU_H_PARAMS', 'VAL_TRANS')
+
+    def set_model_params(self, **kwargs):
+        """Handle the parameters a model needs in order to train and eval"""
+        model_params = {}
+        train_transform = kwargs.get('tr_transform', None)
+
+        if train_transform == 'center_crop':
+            model_params['img_dims'] = self.params_dict['center_crop']
+
+        elif train_transform in ['crop_resize', 'basic_augment', 'rand_augment']:
+            model_params['img_dims'] = self.params_dict['resize']
+
+        elif train_transform is None:
+            model_params['img_dims'] = None
+
+        else:
+            raise AssertionError('transform name is not valid')
+
+        return model_params
