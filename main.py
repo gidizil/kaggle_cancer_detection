@@ -4,7 +4,7 @@ from data_utils_v2 import PickleImageData
 import configparser
 from models.basic_two_layers_model_copy import Net
 from models.three_layers_model import Net
-from models.four_layers_model import Net
+#from models.four_layers_model import Net
 #from models.five_layers_double_conv_model import Net
 # from models.resnet50 import Net
 from models.train_classifier import Classifier
@@ -12,9 +12,7 @@ import os
 from general_utils import SetSeeds, GPUConfig, HyperParamsConfig
 from transformations import Transformations
 
-# 1. Get pickled data path
-config = configparser.ConfigParser()
-config.read_file(open(r'config.txt'))
+# 1. invoke configuration dictionaries
 class_config = GPUConfig()
 path_dict = class_config.get_paths_dict()
 h_params_config = HyperParamsConfig()
@@ -40,18 +38,8 @@ transformers = Transformations(crop_size=h_params_dict['center_crop'],
                                resize=h_params_dict['resize']
                                )
 
-
-
-# TODO: Create a method to elegently produce the one you want
-center_crop = transformers.center_crop
-resize = transformers.resize
-crop_resize = transformers.crop_resize
-basic_augment = transformers.basic_augment
-rand_augment = transformers.rand_augment
-
-# Choose desired transform
-train_transform = basic_augment
-val_transform = crop_resize
+train_transform = transformers.set_transform(h_params_dict['tr_transform'])
+val_transform = transformers.set_transform(h_params_dict['val_transform'])
 
 train_set = CancerDataset(path_dict['pickle_train'],
                           tr_labels_dict, tr_images_list,
@@ -72,14 +60,8 @@ val_loader = torch.utils.data.DataLoader(val_set, batch_size=h_params_dict['batc
                                          worker_init_fn=SetSeeds._init_fn)
 
 # 5. Train Network
-# TODO: Handle this to work seamlessly with the transform
-if train_transform == center_crop:
-    net = Net(h_params_dict['center_crop'])
-elif train_transform in [crop_resize, basic_augment, rand_augment]:
-    net = Net(h_params_dict['resize'])
-else:
-    net = Net()
-
+model_params_dict = h_params_config.set_model_params(tr_transform=h_params_dict['tr_transform'])
+net = Net(**model_params_dict)
 net_classifier = Classifier(net)
 
 net_classifier.fit_and_eval(train_loader, val_loader)
