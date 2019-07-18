@@ -4,7 +4,7 @@ import torch.optim as optim
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from general_utils import GPUConfig, HyperParamsConfig
+# from general_utils import GPUConfig, HyperParamsConfig
 import os
 
 
@@ -13,7 +13,7 @@ import os
 """ classifier given a training Loader object """
 """ based on architectures defined in models/ """
 """ use config.txt to define hyperparameters  """
-"""==========================================="""
+# """==========================================="""
 
 
 class Classifier:
@@ -228,13 +228,3 @@ class Classifier:
         plt.ylabel('Accuracy')
         plt.savefig(plot_path)
         plt.close()
-
-
-
-
-
-
-
-
-
-
