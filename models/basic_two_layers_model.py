@@ -6,7 +6,7 @@ from collections import OrderedDict
 
 
 class Net(nn.Module, ModelUtils):
-    def __init__(self, img_dims=None):
+    def __init__(self, **kwargs):
 
         net_dict = OrderedDict([('conv1', ((5, 5), )),
                                 ('pool1', ((2, 2), 2)),
@@ -15,7 +15,9 @@ class Net(nn.Module, ModelUtils):
                                 ])
         # Inherit from parent classes
         super(Net, self).__init__()
-        utils = ModelUtils(img_dims, net_dict)
+        # TODO: update is dangerous. It can override - should add some sort of assertion first
+        self.__dict__.update(kwargs)
+        utils = ModelUtils(self.img_dims, net_dict)
         utils.get_final_feature_map_dims()
         self.final_f_map_dims = utils.final_f_maps_dims
 
